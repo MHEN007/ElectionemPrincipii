@@ -1,0 +1,81 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["views"]
+  binaryTargets   = ["native", "linux-arm64-openssl-1.1.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Voter {
+  id            Int            @id @default(autoincrement())
+  name          String         @db.VarChar(255)
+  password      String         @db.VarChar(255)
+  kelompok      Role
+  kelas         Int
+  Votes         Vote?
+  VotersPembina VotersPembina?
+  VotersPvra    VotersPvra?
+  VotersSrvm    VotersSrvm?
+}
+
+model Round {
+  id        Int      @id @default(autoincrement())
+  startTime DateTime
+  endTime   DateTime
+  status    Boolean
+  Votes     Vote[]
+}
+
+model VotersPvra {
+  id            Int     @id @default(autoincrement())
+  votedPraefect Boolean
+  votedVicarius Boolean
+  voter         Voter   @relation(fields: [id], references: [id], onDelete: Cascade)
+}
+
+model VotersSrvm {
+  id           Int     @id @default(autoincrement())
+  votedVicaria Boolean
+  voter        Voter   @relation(fields: [id], references: [id], onDelete: Cascade)
+}
+
+model VotersPembina {
+  id            Int     @id @default(autoincrement())
+  votedPraefect Boolean
+  votedVicarius Boolean
+  votedVicaria  Boolean
+  voter         Voter   @relation(fields: [id], references: [id], onDelete: Cascade)
+}
+
+model Vote {
+  id      Int   @id @default(autoincrement())
+  votedId Int   @unique
+  roundId Int
+  round   Round @relation(fields: [roundId], references: [id], onDelete: Cascade)
+  voted   Voter @relation(fields: [votedId], references: [id], onDelete: Cascade)
+}
+
+view CandidatePraefect {
+  id   Int    @unique
+  name String @db.VarChar(255)
+}
+
+view CandidateVicarius {
+  id   Int    @unique
+  name String @db.VarChar(255)
+}
+
+view CandidateVicaria {
+  id   Int    @unique
+  name String @db.VarChar(255)
+}
+
+enum Role {
+  PVRA
+  SRVM
+  PEMBINA
+  CAMERLENGHI
+}

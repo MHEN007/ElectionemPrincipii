@@ -2,17 +2,23 @@
 
 import { useState } from "react"
 import { API_URL } from "./const"
+import { useRouter } from "next/navigation"
 
 export default function Home(){
     const [ username, setUsername ] = useState<string>("")
     const [ password, setPassword ] = useState<string>("")
 
+    const router = useRouter()
+
     const handleLogin = async () => {
         const response = await fetch(API_URL + '/login', {
             method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
             body: JSON.stringify({
-                "username": username,
-                "password": password,
+                username: username,
+                password: password,
             })
         })
 
@@ -21,6 +27,7 @@ export default function Home(){
         }
 
         // Redirect to other page
+        router.push("/vote")
     }
 
     return (

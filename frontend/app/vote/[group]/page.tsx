@@ -1,6 +1,7 @@
 'use client'
 import { useParams } from "next/navigation"
 import { useState } from "react";
+import Image from "next/image";
 
 export default function Page(){
     const { group } = useParams() as { group: string };
@@ -20,9 +21,9 @@ export default function Page(){
     return(
         <div className="flex flex-col items-center m-0 p-10">
             <div>
-                Logo
+                <Image src="/perseviam.png" width={100} height={200} alt="Logo Perseviam"/>
             </div>
-            <h1 className="font-bold text-lg">Eligo in {(group === "prefect" || group === "vicarius") ? "Perseverantem" : "Serviet"} {(group === "prefect") ? "Præefect" : (group === "vicarius") ? "Vicarius" : "Vicaria"}</h1>
+            <h1 className="font-bold text-lg">Eligo in {(group === "vicarius") ? "Perseverantem" : "Serviet"} {(group === "vicarius") ? "Vicarius" : "Vicaria"}</h1>
             <select className="p-2 m-5 w-100 bg-white rounded-sm" onChange={(e) => setNominee(e.target.value)} value={nominee}>
                 <option value="" disabled selected>~Elige Nomen~</option>
                 <option value="1">Calon 1</option>
@@ -37,7 +38,7 @@ export default function Page(){
 
             </div>
             <button className="bg-gray-500 p-2 w-50 text-white rounded-sm" onClick={() => handleVote()}>
-                {(group === "prefect" || group === "vicarius") ? "Ad Maiorem Dei Gloriam" : "Soli Deo Gloria"}
+                {group === "vicarius" ? "Ad Maiorem Dei Gloriam" : "Soli Deo Gloria"}
             </button>
         </div>
     )

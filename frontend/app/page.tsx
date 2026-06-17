@@ -3,10 +3,13 @@
 import { useState } from "react"
 import { API_URL } from "./const"
 import { useRouter } from "next/navigation"
+import Image from "next/image"
 
 export default function Home(){
     const [ username, setUsername ] = useState<string>("")
     const [ password, setPassword ] = useState<string>("")
+
+    const year = new Date().getFullYear();
 
     const router = useRouter()
 
@@ -33,8 +36,9 @@ export default function Home(){
     return (
         <div className="flex flex-col items-center m-5">
             {/* Title */}
-            <div>
-                <h1 className="font-bold text-3xl">Electionem Principiis Nostris A.D. 2025</h1>
+            <div className="flex flex-col items-center">
+                <Image src="/perseviam.png" width={100} height={200} alt="Logo Perseviam"/>
+                <h1 className="font-bold text-3xl">Electionem Principiis Nostris A.D. {year}</h1>
             </div>
 
             {/* Login Form */}

@@ -2,9 +2,16 @@
 import { useParams } from "next/navigation"
 import { useState } from "react";
 import Image from "next/image";
+import NotFound from "@/app/not-found";
 
 export default function Page(){
     const { group } = useParams() as { group: string };
+
+    const allowedGroup = ["vicarius", "vicaria"];
+
+    if (!allowedGroup.includes(group) ){
+        return NotFound();
+    }
 
     const [nominee, setNominee] = useState<string>("");
     const [checked, setChecked] = useState<boolean>(false);

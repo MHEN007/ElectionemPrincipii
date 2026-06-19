@@ -3,6 +3,8 @@ import { useParams } from "next/navigation"
 import { useState } from "react";
 import Image from "next/image";
 import NotFound from "@/app/not-found";
+import { API_URL } from "@/app/const";
+import { redirect } from "next/navigation";
 
 export default function Page(){
     const { group } = useParams() as { group: string };
@@ -18,11 +20,26 @@ export default function Page(){
 
     const handleVote = async () => {
         if (!checked || nominee === "") {
-            alert("Please check the box to vote");
+            alert("Please check the box to vote and select a nominee");
             return;
         }
 
-        console.log(nominee);
+        const voteResponse = await fetch(API_URL + "/vote", {
+            method: "POST",
+            credentials: "include",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                voted_id: nominee
+            })
+        })
+
+        if (!voteResponse) {
+            throw new Error("Error")
+        }
+
+        return redirect("/vote")
     }
 
     return(
@@ -32,8 +49,8 @@ export default function Page(){
             </div>
             <h1 className="font-bold text-lg">Eligo in {(group === "vicarius") ? "Perseverantem" : "Serviet"} {(group === "vicarius") ? "Vicarius" : "Vicaria"}</h1>
             <select className="p-2 m-5 w-100 bg-white rounded-sm" onChange={(e) => setNominee(e.target.value)} value={nominee}>
-                <option value="" disabled selected>~Elige Nomen~</option>
-                <option value="1">Calon 1</option>
+                <option value="" disabled defaultValue={""}>~Elige Nomen~</option>
+                <option value="68ac6171-316d-4f43-919c-e110ef87ef17">Calon 1</option>
                 <option value="2">Calon 2</option>
                 <option value="3">Calon 3</option>
             </select>

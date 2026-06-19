@@ -6,7 +6,7 @@ import { eq } from "drizzle-orm";
 export type MemberType = typeof Member.$inferSelect
 
 export class MemberRepository {
-    async AddMember(member: MemberType) {
+    public static async AddMember(member: MemberType) {
         await db.transaction( async (tx) => {
             tx.insert(Member).values(member)
 
@@ -20,7 +20,21 @@ export class MemberRepository {
         })
     }
 
-    async GetMemberVoterStatus() {
+    public static async GetMemberbyUsername(username: string): Promise<MemberType> {
+        const [member] = await db
+            .select()
+            .from(Member)
+            .where(eq(Member.username, username))
+            .limit(1);
+
+        if (!member) {
+            throw new Error("Member not found");
+        }
+
+        return member;
+    }
+
+    public static async GetMemberVoterStatus() {
         const PVRAVoters = await db
         .select({
             name: Member.name,

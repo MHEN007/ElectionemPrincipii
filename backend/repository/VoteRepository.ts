@@ -9,26 +9,26 @@ export type Vote = typeof Vote.$inferSelect;
 type InsertVote = typeof Vote.$inferInsert
 
 export class VoteRepository {
-    async GetVotes() {
+    public static async GetVotes() {
         const pvraVotes = await db
-        .select({
-            name: Member.name,
-            votes: count(Member.id) || 0
-        })
-        .from(VicariusCandidate)
-        .innerJoin(Member, eq(Member.id, VicariusCandidate.id))
-        .leftJoin(Vote, eq(VicariusCandidate.id, Vote.vote))
-        .groupBy(VicariaCandidate.id)
+            .select({
+                name: Member.name,
+                votes: count(Member.id) || 0
+            })
+            .from(VicariusCandidate)
+            .innerJoin(Member, eq(Member.id, VicariusCandidate.id))
+            .leftJoin(Vote, eq(VicariusCandidate.id, Vote.vote))
+            .groupBy(VicariaCandidate.id)
 
         const srvmVotes = await db
-        .select({
-            name: Member.name,
-            votes: count(Member.id) || 0
-        })
-        .from(VicariaCandidate)
-        .innerJoin(Member, eq(Member.id, VicariaCandidate.id))
-        .leftJoin(Vote, eq(VicariaCandidate.id, Vote.vote))
-        .groupBy(VicariaCandidate.id)
+            .select({
+                name: Member.name,
+                votes: count(Member.id) || 0
+            })
+            .from(VicariaCandidate)
+            .innerJoin(Member, eq(Member.id, VicariaCandidate.id))
+            .leftJoin(Vote, eq(VicariaCandidate.id, Vote.vote))
+            .groupBy(VicariaCandidate.id)
 
         return {
             ...pvraVotes,
@@ -36,11 +36,8 @@ export class VoteRepository {
         }
     }
 
-    async Vote(voter_id: string, vote: InsertVote) {
+    public static async Vote(voter_id: string, vote: InsertVote) {
         await db.transaction(async (tx) => {
-            // Insert the vote
-            await tx.insert(Vote).values(vote);
-
             // Get the candidate's group
             const [candidate] = await tx
                 .select({ group: Member.group })
@@ -51,22 +48,26 @@ export class VoteRepository {
                 throw new Error("Candidate not found");
             }
 
-            // Update voting status based on candidate group
-            switch (candidate.group) {
-                case "PVRA":
-                    await tx
-                        .update(VoteStatusPVRA)
-                        .set({ vote_status: true })
-                        .where(eq(VoteStatusPVRA.id, voter_id));
-                    break;
+            // Check if candidate has voted or not for this group
+            const query = await tx
+                .select({ status: candidate.group == "PVRA" ? VoteStatusPVRA.vote_status : VoteStatusSRVM.vote_status})
+                .from( candidate.group=="PVRA" ? VoteStatusPVRA : VoteStatusSRVM )
+                .where(eq(candidate.group=="PVRA" ? VoteStatusPVRA.id : VoteStatusSRVM.id, voter_id))
+                .then((v) => v.at(0))
 
-                case "SRVM":
-                    await tx
-                        .update(VoteStatusSRVM)
-                        .set({ vote_status: true })
-                        .where(eq(VoteStatusSRVM.id, voter_id));
-                    break;
+
+            if(!query || query.status) {
+                throw new Error("You have voted for this group")
             }
+
+            // Insert the vote
+            await tx.insert(Vote).values(vote);
+
+            // Update voting status based on candidate group
+            await tx
+                .update(candidate.group == "PVRA" ? VoteStatusPVRA : VoteStatusSRVM)
+                .set({ vote_status: true })
+                .where(eq(candidate.group == "PVRA" ? VoteStatusPVRA.id : VoteStatusSRVM.id, voter_id));
         });
     }
 }

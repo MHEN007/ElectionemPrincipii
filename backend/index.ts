@@ -2,6 +2,9 @@ import express from "express";
 import { drizzle } from "drizzle-orm/node-postgres";
 import dotenv from "dotenv";
 import cors from "cors";
+import authRouter from "./route/AuthRoute";
+import cookieParser from "cookie-parser";
+import voteRouter from "./route/VoteRoute";
 
 dotenv.config();
 
@@ -15,7 +18,16 @@ const corsOptions = {
   credentials: true,
 };
 
+app.use(express.json())
+app.use(cookieParser())
 app.use(cors(corsOptions))
+
+app.use(authRouter)
+app.use(voteRouter)
+
+app.use(express.Router().get("/", (req, res) => {
+  res.status(200).json({Message: "Hello World"})
+}))
 
 app.listen(port, () => {
     console.log(`Listening on port ${port}`);

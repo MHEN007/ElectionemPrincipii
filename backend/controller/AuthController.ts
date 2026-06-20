@@ -13,7 +13,7 @@ export class AuthController {
         // Check if it is the valid token
         const dbToken = await TokenRepository.GetVoteToken();
 
-        if(!dbToken && bcrypt.compareSync(token, dbToken)) {
+        if(!dbToken || !bcrypt.compareSync(token, dbToken)) {
             throw new Error("User or token not found")
         }
 

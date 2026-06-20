@@ -19,7 +19,7 @@ authRouter.post("/login", async (req, res) => {
 
     } catch (error: unknown) {
         if (error instanceof Error)
-            res.status(500).json({message: `Login failure ${error}`})
+            res.status(500).json({message: `${error}`})
     }
 })
 

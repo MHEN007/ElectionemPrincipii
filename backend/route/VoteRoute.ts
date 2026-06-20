@@ -20,4 +20,20 @@ voteRouter.post("/vote", Middleware, async (req, res) => {
 
 })
 
+voteRouter.get("/voteReport", Middleware, async (req, res) => {
+    try {
+        const report = await VoteController.GetVotes()
+
+        res.status(200).json({
+            vicariusVotes: report.pvraVotes,
+            vicariaVotes: report.srvmVotes,
+            total: report.pvraVotes.length + report.srvmVotes.length
+        })
+    }catch (error) {
+        if (error instanceof Error) {
+            res.status(500).json({message: error.message})
+        }
+    }
+})
+
 export default voteRouter

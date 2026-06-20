@@ -1,13 +1,14 @@
 'use client'
-import { useParams } from "next/navigation"
+import { redirect, useParams, useRouter } from "next/navigation"
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import NotFound from "@/app/not-found";
 import { API_URL } from "@/app/const";
-import { redirect } from "next/navigation";
 
 export default function Page(){
     const { group } = useParams() as { group: string };
+
+    const router = useRouter();
 
     const allowedGroup = ["vicarius", "vicaria"];
 
@@ -48,7 +49,7 @@ export default function Page(){
                 throw new Error(errorMessage)
             }
 
-            return redirect("/vote")
+            router.push("/vote")
         } catch (error) {
             if (error instanceof Error)
                 setError(error.message)
@@ -97,8 +98,8 @@ export default function Page(){
 
             <select className="p-2 m-5 w-100 bg-white rounded-sm" onChange={(e) => setNominee(e.target.value)} value={nominee}>
                 <option value="" disabled defaultValue={""}>~Elige Nomen~</option>
-                { candidates.map((candidate) => {
-                    return (<option value={candidate.id}>{candidate.name}</option>)
+                { candidates.map((candidate, idx) => {
+                    return (<option key={idx+1} value={candidate.id}>{candidate.name}</option>)
                 }) }
             </select>
             <div className="flex flex-row w-100 text-center justify-center overflow-auto">
@@ -108,7 +109,7 @@ export default function Page(){
                 </label>
 
             </div>
-            <button className="bg-green-800 p-2 w-50 text-white rounded-sm" onClick={() => handleVote()}>
+            <button className="bg-green-800 p-2 w-50 text-white rounded-sm" onClick={handleVote}>
                 {group === "vicarius" ? "Ad Maiorem Dei Gloriam" : "Soli Deo Gloria"}
             </button>
             <button className="bg-gray-500 p-2 w-50 mt-5 text-white rounded-sm" onClick={() => {redirect("/vote")}}>

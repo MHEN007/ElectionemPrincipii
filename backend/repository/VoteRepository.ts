@@ -13,26 +13,26 @@ export class VoteRepository {
         const pvraVotes = await db
             .select({
                 name: Member.name,
-                votes: count(Member.id) || 0
+                votes: count(Vote.vote)
             })
             .from(VicariusCandidate)
             .innerJoin(Member, eq(Member.id, VicariusCandidate.id))
             .leftJoin(Vote, eq(VicariusCandidate.id, Vote.vote))
-            .groupBy(VicariaCandidate.id)
+            .groupBy(VicariusCandidate.id, Member.name);
 
         const srvmVotes = await db
             .select({
                 name: Member.name,
-                votes: count(Member.id) || 0
+                votes: count(Member.id)
             })
             .from(VicariaCandidate)
             .innerJoin(Member, eq(Member.id, VicariaCandidate.id))
             .leftJoin(Vote, eq(VicariaCandidate.id, Vote.vote))
-            .groupBy(VicariaCandidate.id)
+            .groupBy(VicariaCandidate.id, Member.name);
 
         return {
-            ...pvraVotes,
-            ...srvmVotes
+            pvraVotes: pvraVotes,
+            srvmVotes: srvmVotes
         }
     }
 

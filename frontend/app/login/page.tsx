@@ -8,30 +8,39 @@ import Image from "next/image"
 export default function Login(){
     const [ username, setUsername ] = useState<string>("")
     const [ password, setPassword ] = useState<string>("")
+    const [error, setError] = useState<string>("")
 
     const year = new Date().getFullYear();
 
     const router = useRouter()
 
     const handleLogin = async () => {
-        const response = await fetch(API_URL + '/login', {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            credentials: "include",
-            body: JSON.stringify({
-                username: username,
-                password: password,
+        try {
+
+            const response = await fetch(API_URL + '/login', {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                credentials: "include",
+                body: JSON.stringify({
+                    username: username,
+                    password: password,
+                })
             })
-        })
-
-        if (!response) {
-            console.error("LOGIN FAILED")
+    
+            if (!response.ok) {
+                const errorMsg = await response.json()
+    
+                throw new Error(errorMsg.message)
+            }
+    
+            // Redirect to other page
+            router.push("/vote")
+        } catch (error) {
+            if (error instanceof Error)
+                setError(error.message)
         }
-
-        // Redirect to other page
-        router.push("/vote")
     }
 
     return (
@@ -41,6 +50,13 @@ export default function Login(){
                 <Image src="/perseviam.png" width={100} height={200} alt="Logo Perseviam"/>
                 <h1 className="font-bold text-3xl">Electionem Principiis Nostris A.D. {year}</h1>
             </div>
+
+            {/* Error */}
+            {error !== "" && (
+            <div className="flex flex-col bg-red-300">
+                {error}
+            </div>
+            )}
 
             {/* Login Form */}
             <div className="flex flex-col mt-20">

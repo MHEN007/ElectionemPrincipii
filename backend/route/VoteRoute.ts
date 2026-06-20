@@ -4,18 +4,17 @@ import { VoteController } from "../controller/VoteController"
 
 const voteRouter = express.Router()
 
-voteRouter.post("/vote", Middleware, (req, res) => {
+voteRouter.post("/vote", Middleware, async (req, res) => {
     try { 
-
         const { voted_id } = req.body
     
-        VoteController.Vote(req.user?.user.id, voted_id)
+        await VoteController.Vote(req.user?.user.id, voted_id)
 
         res.status(200).json({message: "Vote Success"})
-        
-    } catch (e: unknown) {
-        if (e instanceof Error) {
-            res.status(500).json({message: e})
+
+    } catch (error) {
+        if (error instanceof Error) {
+            res.status(500).json({message: error.message})
         }
     }
 

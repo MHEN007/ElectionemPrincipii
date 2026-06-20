@@ -3,6 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { API_URL } from "../const";
 import { useRouter } from "next/navigation"
+import { useEffect, useState } from "react";
 
 export default function Page(){
     const router = useRouter();
@@ -12,7 +13,8 @@ export default function Page(){
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
-            }
+            },
+            credentials: "include"
         })
 
         if (!response) {
@@ -22,6 +24,28 @@ export default function Page(){
         // Redirect to other page
         router.push("/")
     }
+
+    const [group, setGroup] = useState("");
+
+    useEffect(() => {
+        const fetchInfo = async () => {
+            // Validate user authorization
+            const authorizationLevel = await fetch(API_URL + "/clearance", {
+                method: "GET",
+                headers: {
+                    "Accept": "application/json",
+                    "Cookie": cookieStore.toString() 
+                },
+                credentials: "include"
+            })
+
+            const resp = await authorizationLevel.json()
+
+            setGroup(resp.group)
+        }
+
+        fetchInfo()
+    })
 
     return (
         <div className="p-15">
@@ -36,8 +60,11 @@ export default function Page(){
                     Commisio Electionis
                 </h1>
 
-                <div className="flex flex-grow justify-end" onClick={handleLogout}>
-                    Exitus (Logout)
+                <div className="flex flex-grow justify-end">
+
+                    <button className="bg-gray-400 text-white p-3" onClick={handleLogout}>
+                        Exitus (Logout)
+                    </button>
                 </div>
             </div>
             <div className="flex flex-col">
@@ -49,6 +76,8 @@ export default function Page(){
                         </div>
                     </Link> */}
 
+                    { (group == "PVRA" || group == "PSVM" ) && ( 
+
                     <Link href="/vote/vicarius">
                         <div className="bg-orange-600 p-5 text-white p-2 m-5 rounded-sm">
                             Suffragium Vicarium<br />
@@ -56,12 +85,18 @@ export default function Page(){
                         </div>
                     </Link>
 
+                     ) }
+
+                     { (group == "SRVM" || group == "PSVM" ) && ( 
+
                     <Link href="/vote/vicaria">
                         <div className="bg-green-700 p-5 text-white p-2 m-5 rounded-sm">
                             Suffragium Vicariam<br />
                             (Suara untuk Vicaria)
                         </div>
                     </Link>
+
+                    ) }
                 </div>
             </div>
         </div>

@@ -1,1 +1,0 @@
-ALTER TABLE "vote_token" ALTER COLUMN "token" SET DATA TYPE varchar(255);

@@ -23,7 +23,7 @@ export class VoteRepository {
         const srvmVotes = await db
             .select({
                 name: Member.name,
-                votes: count(Member.id)
+                votes: count(Vote.vote)
             })
             .from(VicariaCandidate)
             .innerJoin(Member, eq(Member.id, VicariaCandidate.id))
@@ -40,7 +40,7 @@ export class VoteRepository {
         await db.transaction(async (tx) => {
             // Get the candidate's group
             const [candidate] = await tx
-                .select({ group: Member.group })
+                .select({ name: Member.name, group: Member.group})
                 .from(Member)
                 .where(eq(Member.id, vote.vote));
 
@@ -48,16 +48,22 @@ export class VoteRepository {
                 throw new Error("Candidate not found");
             }
 
-            // Check if candidate has voted or not for this group
+            // Check if voter has voted or not for this group
             const query = await tx
-                .select({ status: candidate.group == "PVRA" ? VoteStatusPVRA.vote_status : VoteStatusSRVM.vote_status})
+                .select({ status: candidate.group == "PVRA" ? VoteStatusPVRA.vote_status : VoteStatusSRVM.vote_status })
                 .from( candidate.group=="PVRA" ? VoteStatusPVRA : VoteStatusSRVM )
                 .where(eq(candidate.group=="PVRA" ? VoteStatusPVRA.id : VoteStatusSRVM.id, voter_id))
                 .then((v) => v.at(0))
 
-
             if(!query || query.status) {
                 throw new Error("You have voted for this group")
+            }
+
+            // Check if voter can vote or not
+            const voteAbility = await db.select({ status: Member.voteDisabled }).from(Member).where(eq(Member.id, voter_id)).then((r) => r.at(0))
+
+            if (!voteAbility || !voteAbility.status) {
+                throw new Error("Your vote status has been disabled. Please contact the MC!")
             }
 
             // Insert the vote

@@ -30,6 +30,7 @@ authRouter.post("/logout", (req, res) => {
 
 authRouter.get("/clearance", Middleware, (req, res) => {
     res.status(200).json({
+        name: req.user?.user.name,
         isAdmin: req.user?.user.admin,
         group: req.user?.user.group
     })

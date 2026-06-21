@@ -1,5 +1,5 @@
 {
-  "id": "30552781-6058-4e68-a528-58d8b71069bb",
+  "id": "7bfc5981-3c03-4e20-a853-e574c74d5983",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -250,7 +250,7 @@
       "columns": {
         "token": {
           "name": "token",
-          "type": "varchar(6)",
+          "type": "varchar(255)",
           "primaryKey": true,
           "notNull": true
         }
@@ -280,6 +280,12 @@
           "primaryKey": false,
           "notNull": true
         },
+        "password": {
+          "name": "password",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
         "name": {
           "name": "name",
           "type": "varchar",
@@ -299,6 +305,13 @@
           "typeSchema": "public",
           "primaryKey": false,
           "notNull": true
+        },
+        "vote_disabled": {
+          "name": "vote_disabled",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
         }
       },
       "indexes": {},

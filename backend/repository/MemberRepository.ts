@@ -1,7 +1,7 @@
 import { db } from "..";
 import { Member } from "../schema/Members";
 import { VoteStatusPVRA, VoteStatusSRVM } from "../schema/Status";
-import { eq } from "drizzle-orm";
+import { eq, ne, desc } from "drizzle-orm";
 
 export type MemberType = typeof Member.$inferSelect
 
@@ -41,7 +41,9 @@ export class MemberRepository {
             status: VoteStatusPVRA.vote_status
         })
         .from(Member)
-        .innerJoin(VoteStatusPVRA, eq(Member.id, VoteStatusPVRA.id))
+        .leftJoin(VoteStatusPVRA, eq(Member.id, VoteStatusPVRA.id))
+        .where(ne(Member.group, "SRVM"))
+        .orderBy(desc(VoteStatusPVRA.vote_status))
 
         const SRVMVoters = await db
         .select({
@@ -49,11 +51,13 @@ export class MemberRepository {
             status: VoteStatusSRVM.vote_status
         })
         .from(Member)
-        .innerJoin(VoteStatusSRVM, eq(Member.id, VoteStatusPVRA.id))
+        .leftJoin(VoteStatusSRVM, eq(Member.id, VoteStatusSRVM.id))
+        .where(ne(Member.group, "PVRA"))
+        .orderBy(desc(VoteStatusSRVM.vote_status))
 
         return {
-            ...PVRAVoters,
-            ...SRVMVoters
+            vicariusVoteStatus: PVRAVoters,
+            vicariaVoteStatus: SRVMVoters
         }
     }
 }

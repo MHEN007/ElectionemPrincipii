@@ -1,5 +1,4 @@
 import { MemberRepository } from "../repository/MemberRepository";
-import { TokenRepository } from "../repository/TokenRepository";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 
@@ -8,13 +7,11 @@ export class AuthController {
         // Search and get for user
         const dbUser = await MemberRepository.GetMemberbyUsername(username);
 
-        if (!dbUser) { throw new Error("User or token not found") }
+        if (!dbUser) { throw new Error("User or password incorrect") }
 
-        // Check if it is the valid token
-        const dbToken = await TokenRepository.GetVoteToken();
-
-        if(!dbToken || !bcrypt.compareSync(token, dbToken)) {
-            throw new Error("User or token not found")
+        // Check if the password is correct or not
+        if(!bcrypt.compareSync(token, dbUser.password)) {
+            throw new Error("User or password incorrect")
         }
 
         // Create jwt

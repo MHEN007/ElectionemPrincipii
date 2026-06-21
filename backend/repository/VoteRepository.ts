@@ -62,7 +62,7 @@ export class VoteRepository {
             // Check if voter can vote or not
             const voteAbility = await db.select({ status: Member.voteDisabled }).from(Member).where(eq(Member.id, voter_id)).then((r) => r.at(0))
 
-            if (!voteAbility || !voteAbility.status) {
+            if (!voteAbility || voteAbility.status) {
                 throw new Error("Your vote status has been disabled. Please contact the MC!")
             }
 

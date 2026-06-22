@@ -1,21 +1,33 @@
 import { db } from "..";
+import { VicariaCandidate, VicariusCandidate } from "../schema/Candidate";
 import { Member } from "../schema/Members";
 import { VoteStatusPVRA, VoteStatusSRVM } from "../schema/Status";
 import { eq, ne, desc, like, not } from "drizzle-orm";
 
 export type MemberType = typeof Member.$inferSelect
 
+export type CreateMemberType = MemberType & {
+    isCandidate: boolean;
+}
+
 export class MemberRepository {
-    public static async AddMember(member: MemberType) {
+    public static async AddMember(member: CreateMemberType) {
         await db.transaction( async (tx) => {
-            tx.insert(Member).values(member)
+            const [createdId] = await tx.insert(Member).values(member).returning({ createdId: Member.id })
+            
+            if (!createdId?.createdId)
+                throw new Error("Failed to create user")
 
             if (member.group == "PVRA" || member.group == "PSVM") {
-                tx.insert(VoteStatusPVRA).values({id: member.id})
+                await tx.insert(VoteStatusPVRA).values({id: createdId?.createdId})
             }
 
             if (member.group == "SRVM" || member.group == "PSVM") {
-                tx.insert(VoteStatusSRVM).values({id: member.id})
+                await tx.insert(VoteStatusSRVM).values({id: createdId?.createdId})
+            }
+
+            if (member.isCandidate && (member.group != "PSVM")) {
+                await tx.insert(member.group == "PVRA" ? VicariusCandidate : VicariaCandidate).values({id: createdId?.createdId})
             }
         })
     }
@@ -73,7 +85,9 @@ export class MemberRepository {
                 whereClause
                     ? like(Member.name, `%${whereClause}%`)
                     : undefined
-            );
+            )
+            .orderBy(Member.group, Member.name)
+            // .groupBy(Member.group);
     }
 
     public static async UpdateMemberStatus(member_id: string) {

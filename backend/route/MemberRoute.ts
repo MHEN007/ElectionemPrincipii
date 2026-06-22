@@ -38,6 +38,10 @@ memberRoute.patch("/member", async (req, res) => {
 
 memberRoute.post("/members/upload", upload.single('file'), async (req, res) => {
     try {
+        if (!req.user?.user.admin) {
+            throw new Error("Unauthorized");
+        }
+
         if (!req.file) {
             throw new Error("No file uploaded")
         }

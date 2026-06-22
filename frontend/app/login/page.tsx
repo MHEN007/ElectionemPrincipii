@@ -87,7 +87,7 @@ export default function Login(){
 
                 <div className="flex items-center flex-row justify-center">
                     <button 
-                    className="bg-green-800 text-yellow-100 w-100 p-2 text-lg"
+                    className="bg-[#D4AF37] text-yellow-900 w-100 p-2 text-lg"
                     onClick={handleLogin}
                     >
                         Entrare

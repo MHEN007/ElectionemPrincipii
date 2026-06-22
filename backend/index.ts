@@ -6,6 +6,7 @@ import authRouter from "./route/AuthRoute";
 import cookieParser from "cookie-parser";
 import voteRouter from "./route/VoteRoute";
 import candidateRoute from "./route/CandidateRoute";
+import memberRoute from "./route/MemberRoute";
 
 dotenv.config();
 
@@ -26,6 +27,7 @@ app.use(cors(corsOptions))
 app.use(authRouter)
 app.use(voteRouter)
 app.use(candidateRoute)
+app.use(memberRoute)
 
 app.use(express.Router().get("/", (req, res) => {
   res.status(200).json({Message: "Hello World"})

@@ -11,7 +11,7 @@ export class VoteController {
         if (!bcrypt.compareSync(token, activeToken)) 
             throw new Error("Token is invalid. Please check again!")
 
-        await VoteRepository.Vote(voter_id, {vote});
+        await VoteRepository.Vote(voter_id, { vote, vote_id: voter_id });
     }
 
     public static async GetVotes() {

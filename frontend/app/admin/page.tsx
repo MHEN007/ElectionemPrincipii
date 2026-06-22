@@ -8,7 +8,7 @@ export default function AdminDashboard() {
         {
             title: "User Management",
             description: "Manage system permissions, voter profiles, and authentication credentials.",
-            path: "/",
+            path: "/admin/round",
             // Indigo gradient
             bgClass: "from-indigo-500 to-blue-600 focus:ring-indigo-500",
             icon: (

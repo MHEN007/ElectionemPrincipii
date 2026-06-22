@@ -48,6 +48,13 @@ export class VoteRepository {
                 throw new Error("Candidate not found");
             }
 
+            // Check if voter can vote or not
+            const voteAbility = await db.select({ status: Member.voteDisabled }).from(Member).where(eq(Member.id, voter_id)).then((r) => r.at(0))
+
+            if (!voteAbility || voteAbility.status) {
+                throw new Error("Your vote status has been disabled. Please contact the MC!")
+            }
+
             // Check if voter has voted or not for this group
             const query = await tx
                 .select({ status: candidate.group == "PVRA" ? VoteStatusPVRA.vote_status : VoteStatusSRVM.vote_status })
@@ -57,13 +64,6 @@ export class VoteRepository {
 
             if(!query || query.status) {
                 throw new Error("You have voted for this group")
-            }
-
-            // Check if voter can vote or not
-            const voteAbility = await db.select({ status: Member.voteDisabled }).from(Member).where(eq(Member.id, voter_id)).then((r) => r.at(0))
-
-            if (!voteAbility || voteAbility.status) {
-                throw new Error("Your vote status has been disabled. Please contact the MC!")
             }
 
             // Insert the vote

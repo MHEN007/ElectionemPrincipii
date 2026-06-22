@@ -1,7 +1,7 @@
 import { db } from "..";
 import { Member } from "../schema/Members";
 import { VoteStatusPVRA, VoteStatusSRVM } from "../schema/Status";
-import { eq, ne, desc } from "drizzle-orm";
+import { eq, ne, desc, like, not } from "drizzle-orm";
 
 export type MemberType = typeof Member.$inferSelect
 
@@ -59,5 +59,24 @@ export class MemberRepository {
             vicariusVoteStatus: PVRAVoters,
             vicariaVoteStatus: SRVMVoters
         }
+    }
+
+    public static async GetMembers(whereClause?: string) {
+        return db
+            .select({
+                id: Member.id,
+                name: Member.name,
+                voteStatus: Member.voteDisabled,
+            })
+            .from(Member)
+            .where(
+                whereClause
+                    ? like(Member.name, `%${whereClause}%`)
+                    : undefined
+            );
+    }
+
+    public static async UpdateMemberStatus(member_id: string) {
+        await db.update(Member).set({ voteDisabled: not(Member.voteDisabled) }).where(eq(Member.id, member_id))
     }
 }

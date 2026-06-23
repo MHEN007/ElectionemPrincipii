@@ -4,6 +4,7 @@ import { VicariaCandidate, VicariusCandidate } from "../schema/Candidate";
 import { Vote } from "../schema/Vote";
 import { Member } from "../schema/Members";
 import { VoteStatusPVRA, VoteStatusSRVM } from "../schema/Status";
+import { VoteToken } from "../schema/Tokens";
 
 export type Vote = typeof Vote.$inferSelect;
 type InsertVote = typeof Vote.$inferInsert
@@ -75,5 +76,21 @@ export class VoteRepository {
                 .set({ vote_status: true })
                 .where(eq(candidate.group == "PVRA" ? VoteStatusPVRA.id : VoteStatusSRVM.id, voter_id));
         });
+    }
+
+    public static async NewRound(newToken: string) {
+        await db.transaction(async (tx) => {
+            // DELETE VOTES
+            await tx.delete(Vote)
+
+            // RESET VOTE STATUS
+            await tx.update(VoteStatusPVRA).set({ vote_status: false })
+            await tx.update(VoteStatusSRVM).set({ vote_status: false })
+
+            // Delete and update with new token
+            await tx.delete(VoteToken)
+
+            await tx.insert(VoteToken).values({token: newToken})
+        })
     }
 }

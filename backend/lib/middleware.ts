@@ -6,7 +6,7 @@ export default function Middleware(req: Request, res: Response, next: NextFuncti
         const e2rdo = req.cookies["e2rdo"];
 
         if (!e2rdo) {
-            throw Error("Not authenticated. Please provide token!");
+            return res.status(401).json({ message: "Not authenticated. Please provide token!" });
         }
 
         const verifiedToken = jwt.verify(e2rdo, process.env.JWT_SECRET!)
@@ -17,7 +17,7 @@ export default function Middleware(req: Request, res: Response, next: NextFuncti
         
         req.user = verifiedToken
         
-        next()
+        return next()
     } catch (error: unknown) {
         if (error instanceof Error)
             res.status(500).json({ message: error.message });

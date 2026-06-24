@@ -35,27 +35,32 @@ memberRoute.patch("/member", Middleware, async (req, res) => {
 })
 
 memberRoute.post("/members/upload", Middleware, upload.single('file'), async (req, res) => {
-    if (!req.user?.user.admin) {
-        throw new Error("Unauthorized");
+    try {
+        console.log("USER LOG", req.user);
+
+        if (!req.user?.user.admin) {
+            throw new Error("Unauthorized");
+        }
+
+        if (!req.file) {
+            throw new Error("No file uploaded")
+        }
+        
+        // Process the file
+        const stream = Readable.from(req.file.buffer)
+
+        await MemberController.CreateMembersfromFile(stream)
+
+        res.sendStatus(200)
+        
+    } catch (error) {
+        if (error instanceof Error)
+            res.status(500).json({message: error.message})
     }
-
-    if (!req.file) {
-        throw new Error("No file uploaded")
-    }
-    
-    // Process the file
-    const stream = Readable.from(req.file.buffer)
-
-    await MemberController.CreateMembersfromFile(stream)
-
-    res.sendStatus(200)
-    
 })
 
 memberRoute.delete("/member/:id", Middleware, async (req, res) => {
     const { id } = req.params
-
-    console.log
 
     if (!id) {
         throw new Error("Not authenticated")

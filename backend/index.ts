@@ -22,12 +22,12 @@ app.use(express.json())
 app.use(cookieParser())
 app.use(cors(corsOptions))
 
-app.use(authRouter)
-app.use(voteRouter)
-app.use(candidateRoute)
-app.use(memberRoute)
+app.use('/api', authRouter)
+app.use('/api', voteRouter)
+app.use('/api', candidateRoute)
+app.use('/api', memberRoute)
 
-app.use(express.Router().get("/", (req, res) => {
+app.use(express.Router().get("/api", (req, res) => {
   res.status(200).json({Message: "Hello World"})
 }))
 

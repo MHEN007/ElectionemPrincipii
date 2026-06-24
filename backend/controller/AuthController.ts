@@ -17,7 +17,14 @@ export class AuthController {
         // Create jwt
         const jwtToken = jwt.sign(
             {
-                user: dbUser
+                user: { 
+                    id: dbUser.id,
+                    username: dbUser.username,
+                    name: dbUser.name,
+                    admin: dbUser.admin,
+                    group: dbUser.group,
+                    voteDisabled: dbUser.voteDisabled
+                }
             },
             process.env.JWT_SECRET!,
             {

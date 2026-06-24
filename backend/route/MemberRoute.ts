@@ -57,15 +57,28 @@ memberRoute.post("/members/upload", Middleware, upload.single('file'), async (re
     }
 })
 
-memberRoute.delete("/member/:id", async (req, res) => {
+memberRoute.delete("/member/:id", Middleware, async (req, res) => {
     const { id } = req.params
 
-    if (id == req.user?.user.id) {
+    console.log
+
+    if (!id) {
+        throw new Error("Not authenticated")
+    }
+
+    const reqId = Array.isArray(id) ? id[0] : id
+
+    if (!reqId) {
+        throw new Error("Not authenticated")
+    }
+
+    if (reqId == req.user?.user.id) {
         res.status(403).json({message: "unable to delete self"})
+        return
     }
 
     try {
-        await MemberController.DeleteMember(id)
+        await MemberController.DeleteMember(reqId)
         res.sendStatus(200)
     } catch (error) {
         if (error instanceof Error)

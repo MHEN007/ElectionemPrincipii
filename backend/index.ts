@@ -2,11 +2,11 @@ import express from "express";
 import { drizzle } from "drizzle-orm/node-postgres";
 import dotenv from "dotenv";
 import cors from "cors";
-import authRouter from "./route/AuthRoute";
+import authRouter from "./route/AuthRoute.js";
 import cookieParser from "cookie-parser";
-import voteRouter from "./route/VoteRoute";
-import candidateRoute from "./route/CandidateRoute";
-import memberRoute from "./route/MemberRoute";
+import voteRouter from "./route/VoteRoute.js";
+import candidateRoute from "./route/CandidateRoute.js";
+import memberRoute from "./route/MemberRoute.js";
 
 dotenv.config();
 

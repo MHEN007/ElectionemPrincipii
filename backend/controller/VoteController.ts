@@ -1,6 +1,5 @@
-import { db } from "..";
-import { TokenRepository } from "../repository/TokenRepository";
-import { VoteRepository } from "../repository/VoteRepository";
+import { TokenRepository } from "../repository/TokenRepository.js";
+import { VoteRepository } from "../repository/VoteRepository.js";
 import bcrypt from "bcrypt"
 
 export class VoteController {

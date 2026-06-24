@@ -1,4 +1,4 @@
-import { MemberRepository } from "../repository/MemberRepository";
+import { MemberRepository } from "../repository/MemberRepository.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 

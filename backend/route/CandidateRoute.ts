@@ -1,6 +1,6 @@
 import express from "express";
-import Middleware from "../lib/middleware";
-import { CandidateController } from "../controller/CandidateController";
+import Middleware from "../lib/middleware.js";
+import { CandidateController } from "../controller/CandidateController.js";
 
 const candidateRoute = express.Router();
 

@@ -1,4 +1,4 @@
-import { MemberRepository, type CreateMemberType, type MemberType } from "../repository/MemberRepository";
+import { MemberRepository, type CreateMemberType, type MemberType } from "../repository/MemberRepository.js";
 import { Readable } from "stream"
 import csv from "csv-parser"
 import bcrypt from "bcrypt"

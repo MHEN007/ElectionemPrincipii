@@ -1,10 +1,10 @@
 import { count, eq } from "drizzle-orm";
-import { db } from "..";
-import { VicariaCandidate, VicariusCandidate } from "../schema/Candidate";
-import { Vote } from "../schema/Vote";
-import { Member } from "../schema/Members";
-import { VoteStatusPVRA, VoteStatusSRVM } from "../schema/Status";
-import { VoteToken } from "../schema/Tokens";
+import { db } from "../index.js";
+import { VicariaCandidate, VicariusCandidate } from "../schema/Candidate.js";
+import { Vote } from "../schema/Vote.js";
+import { Member } from "../schema/Members.js";
+import { VoteStatusPVRA, VoteStatusSRVM } from "../schema/Status.js";
+import { VoteToken } from "../schema/Tokens.js";
 
 export type Vote = typeof Vote.$inferSelect;
 type InsertVote = typeof Vote.$inferInsert

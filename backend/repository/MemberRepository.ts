@@ -1,7 +1,7 @@
-import { db } from "..";
-import { VicariaCandidate, VicariusCandidate } from "../schema/Candidate";
-import { Member } from "../schema/Members";
-import { VoteStatusPVRA, VoteStatusSRVM } from "../schema/Status";
+import { db } from "../index.js";
+import { VicariaCandidate, VicariusCandidate } from "../schema/Candidate.js";
+import { Member } from "../schema/Members.js";
+import { VoteStatusPVRA, VoteStatusSRVM } from "../schema/Status.js";
 import { eq, ne, desc, like, not, and } from "drizzle-orm";
 
 export type MemberType = typeof Member.$inferSelect

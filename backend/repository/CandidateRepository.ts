@@ -1,7 +1,7 @@
 import { eq } from "drizzle-orm"
-import { db } from ".."
-import { VicariaCandidate, VicariusCandidate } from "../schema/Candidate"
-import { Member } from "../schema/Members"
+import { db } from "../index.js"
+import { VicariaCandidate, VicariusCandidate } from "../schema/Candidate.js"
+import { Member } from "../schema/Members.js"
 
 export class CandidateRepository {
     public static async GetCandidates(group: string){

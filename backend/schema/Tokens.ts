@@ -1,5 +1,5 @@
 import { pgTable, timestamp, uuid, varchar, primaryKey } from "drizzle-orm/pg-core";
-import { Member } from "./Members";
+import { Member } from "./Members.js";
 
 export const VoteToken = pgTable('vote_token', {
     token: varchar('token', { length: 255 }).notNull().primaryKey()

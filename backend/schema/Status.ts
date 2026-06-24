@@ -1,5 +1,5 @@
 import { boolean, pgTable, uuid } from "drizzle-orm/pg-core";
-import { Member } from "./Members";
+import { Member } from "./Members.js";
 
 export const VoteStatusPVRA = pgTable('vote_status_pvra', {
     id: uuid('id').primaryKey().notNull().references(() => Member.id, { onDelete: "cascade" }),

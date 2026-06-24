@@ -1,5 +1,5 @@
-import { db } from "..";
-import { AuthToken, VoteToken } from "../schema/Tokens";
+import { db } from "../index.js";
+import { AuthToken, VoteToken } from "../schema/Tokens.js";
 import { eq, and, gte } from "drizzle-orm"
 
 export class TokenRepository {

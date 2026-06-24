@@ -1,5 +1,5 @@
 import { pgTable, uuid } from "drizzle-orm/pg-core";
-import { Member } from "./Members";
+import { Member } from "./Members.js";
 
 export const Vote = pgTable('vote', {
     vote_id: uuid('vote_id').primaryKey().notNull().defaultRandom(),

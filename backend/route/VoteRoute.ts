@@ -1,7 +1,7 @@
 import express from "express"
-import Middleware from "../lib/middleware"
-import { VoteController } from "../controller/VoteController"
-import { MemberController } from "../controller/MemberController"
+import Middleware from "../lib/middleware.js"
+import { VoteController } from "../controller/VoteController.js"
+import { MemberController } from "../controller/MemberController.js"
 
 const voteRouter = express.Router()
 
@@ -28,7 +28,7 @@ voteRouter.get("/voteReport", Middleware, async (req, res) => {
         res.status(200).json({
             vicariusVotes: report.pvraVotes,
             vicariaVotes: report.srvmVotes,
-            total: report.pvraVotes.reduce((sum, current) => sum + (current.votes ?? 0), 0) + report.srvmVotes.reduce((sum, current) => sum + (current.votes ?? 0), 0)
+            total: report.pvraVotes.reduce((sum: number, current: any) => sum + (current.votes ?? 0), 0) + report.srvmVotes.reduce((sum: number, current: any) => sum + (current.votes ?? 0), 0)
         })
     }catch (error) {
         if (error instanceof Error) {

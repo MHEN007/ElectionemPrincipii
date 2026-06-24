@@ -1,6 +1,6 @@
 import express from "express"
-import Middleware from "../lib/middleware";
-import { MemberController } from "../controller/MemberController";
+import Middleware from "../lib/middleware.js";
+import { MemberController } from "../controller/MemberController.js";
 import multer from "multer"
 import { Readable } from "stream"
 

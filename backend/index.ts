@@ -16,7 +16,7 @@ export const db = drizzle(process.env.DATABASE_URL!)
 const port = process.env.BE_PORT || 3001;
 
 const corsOptions = {
-  origin: ["http://localhost:3000"],
+  origin: [process.env.FE_API_URL || "http://localhost:3000"],
   credentials: true,
 };
 
@@ -33,7 +33,7 @@ app.use(express.Router().get("/", (req, res) => {
   res.status(200).json({Message: "Hello World"})
 }))
 
-app.listen(port, () => {
+app.listen(port || 3001, () => {
     console.log(`Listening on port ${port}`);
 })
 

@@ -34,7 +34,7 @@ memberRoute.patch("/member", Middleware, async (req, res) => {
     }
 })
 
-memberRoute.post("/members/upload", upload.single('file'), async (req, res) => {
+memberRoute.post("/members/upload", Middleware, upload.single('file'), async (req, res) => {
     try {
         if (!req.user?.user.admin) {
             throw new Error("Unauthorized");

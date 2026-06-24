@@ -1,4 +1,4 @@
-import { db } from "../index.js";
+import { db } from "../lib/db.js"
 import { AuthToken, VoteToken } from "../schema/Tokens.js";
 import { eq, and, gte } from "drizzle-orm"
 

@@ -1,4 +1,4 @@
-import { db } from "../index.js";
+import { db } from "../lib/db.js"
 import { VicariaCandidate, VicariusCandidate } from "../schema/Candidate.js";
 import { Member } from "../schema/Members.js";
 import { VoteStatusPVRA, VoteStatusSRVM } from "../schema/Status.js";

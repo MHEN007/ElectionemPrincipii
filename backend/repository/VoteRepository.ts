@@ -1,5 +1,5 @@
 import { count, eq } from "drizzle-orm";
-import { db } from "../index.js";
+import { db } from "../lib/db.js"
 import { VicariaCandidate, VicariusCandidate } from "../schema/Candidate.js";
 import { Vote } from "../schema/Vote.js";
 import { Member } from "../schema/Members.js";

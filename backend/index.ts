@@ -1,5 +1,4 @@
 import express from "express";
-import { drizzle } from "drizzle-orm/node-postgres";
 import dotenv from "dotenv";
 import cors from "cors";
 import authRouter from "./route/AuthRoute.js";
@@ -10,8 +9,7 @@ import memberRoute from "./route/MemberRoute.js";
 
 dotenv.config();
 
-export const app = express();
-export const db = drizzle(process.env.DATABASE_URL!)
+const app = express();
 
 const port = process.env.BE_PORT || 3001;
 

@@ -2,7 +2,7 @@ import { db } from "..";
 import { VicariaCandidate, VicariusCandidate } from "../schema/Candidate";
 import { Member } from "../schema/Members";
 import { VoteStatusPVRA, VoteStatusSRVM } from "../schema/Status";
-import { eq, ne, desc, like, not } from "drizzle-orm";
+import { eq, ne, desc, like, not, and } from "drizzle-orm";
 
 export type MemberType = typeof Member.$inferSelect
 
@@ -46,6 +46,10 @@ export class MemberRepository {
         return member;
     }
 
+    public static async DeleteMember(id: string) {
+        await db.delete(Member).where(eq(Member.id, id))
+    }
+
     public static async GetMemberVoterStatus() {
         const PVRAVoters = await db
         .select({
@@ -54,7 +58,7 @@ export class MemberRepository {
         })
         .from(Member)
         .leftJoin(VoteStatusPVRA, eq(Member.id, VoteStatusPVRA.id))
-        .where(ne(Member.group, "SRVM"))
+        .where(and(ne(Member.group, "SRVM"), eq(Member.voteDisabled, false)))
         .orderBy(desc(VoteStatusPVRA.vote_status))
 
         const SRVMVoters = await db
@@ -64,7 +68,7 @@ export class MemberRepository {
         })
         .from(Member)
         .leftJoin(VoteStatusSRVM, eq(Member.id, VoteStatusSRVM.id))
-        .where(ne(Member.group, "PVRA"))
+        .where(and(ne(Member.group, "SRVM"), eq(Member.voteDisabled, false)))
         .orderBy(desc(VoteStatusSRVM.vote_status))
 
         return {

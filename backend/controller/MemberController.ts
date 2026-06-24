@@ -58,4 +58,8 @@ export class MemberController {
         }
 
     }
+
+    public static async DeleteMember(username: string) {
+        await MemberRepository.DeleteMember(username)
+    }
 }

@@ -2,6 +2,7 @@
 
 import { API_URL } from "@/app/const"
 import { useEffect, useState } from "react"
+import { useRouter } from "next/navigation"
 
 // Simple loading spinner component
 const LoadingSpinner = () => (
@@ -15,6 +16,8 @@ export default function Status() {
     const [vicariaVotingStatus, setVicariaVotingStatus] = useState([])
     const [isLoading, setIsLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
+
+    const router = useRouter();
 
     useEffect(() => {
         const fetchVotingStatus = async () => {
@@ -56,7 +59,15 @@ export default function Status() {
                     <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
                         Real-time overview of current voting progress.
                     </p>
+
+                    <button 
+                    onClick={() => router.push("/admin")}
+                    className="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 transition shadow-sm cursor-pointer"
+                >
+                    ← Back to Admin
+                </button>
                 </div>
+
 
                 {/* Error State */}
                 {error && (
@@ -76,6 +87,7 @@ export default function Status() {
                         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
                             <div className="px-6 py-5 border-b border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800/50">
                                 <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Vicarius Voting Status</h2>
+                                <p>Quorum: {Math.floor(vicariaVotingStatus.length * 2/3)}</p>
                             </div>
                             <div className="overflow-x-auto">
                                 <StatusTable data={vicariusVotingStatus} />
@@ -86,6 +98,7 @@ export default function Status() {
                         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
                             <div className="px-6 py-5 border-b border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800/50">
                                 <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Vicaria Voting Status</h2>
+                                <p>Quorum: {Math.floor(vicariaVotingStatus.length * 2/3)}</p>
                             </div>
                             <div className="overflow-x-auto">
                                 <StatusTable data={vicariaVotingStatus} />

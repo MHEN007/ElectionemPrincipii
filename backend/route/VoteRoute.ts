@@ -54,7 +54,7 @@ voteRouter.post("/vote/token", Middleware, async (req, res) => {
     try {
         const { token } = await VoteController.NewRound()
 
-        res.send(200).json({token})
+        res.status(200).json({token})
     } catch (error) {
         if (error instanceof Error) {
             res.status(500).json({message: error.message})

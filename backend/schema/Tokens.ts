@@ -7,7 +7,7 @@ export const VoteToken = pgTable('vote_token', {
 
 export const AuthToken = pgTable('auth_token', 
     {
-        user_id: uuid('id').notNull().references(() => Member.id),
+        user_id: uuid('id').notNull().references(() => Member.id, { onDelete: "cascade" }),
         token: varchar('token', { length: 255 }).notNull(),
         expires_at: timestamp('expires_at', { mode: "string" }).notNull().defaultNow(),
     }, 

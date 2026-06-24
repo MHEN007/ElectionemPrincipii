@@ -2,182 +2,84 @@
 
 import { API_URL } from "@/app/const";
 import { useRouter } from "next/navigation";
-import { useState, useEffect, ChangeEvent } from "react";
+import { useState } from "react";
 
-// 1. Defined a TypeScript interface for safety
-interface Member {
-    id: string;
-    name: string;
-    voteStatus: boolean;
-}
+export default function Page() {
+    const router = useRouter();
+    const [newToken, setNewToken] = useState<string>("");
+    const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [error, setError] = useState<string | null>(null);
 
-export default function Round() {
-    const [members, setMembers] = useState<Member[]>([]);
-    const [loading, setLoading] = useState<boolean>(true);
-
-    const [uploading, setUploading] = useState(false);
-    const [message, setMessage] = useState("");
-
-    const router = useRouter()
-
-    const fetchMembers = async () => {
+    const handleRound = async () => {
+        setIsLoading(true);
+        setError(null);
+        
         try {
-            const membersReq = await fetch(`${API_URL}/members`, {
-                method: "GET",
+            const newTokenReq = await fetch(`${API_URL}/vote/token`, {
+                method: "POST",
                 credentials: "include"
             });
-            
-            const response = await membersReq.json();
-            if (!membersReq.ok) {
-                throw new Error(response.message || "Failed to fetch members");
+
+            if (!newTokenReq.ok) {
+                throw new Error(`Server responded with status: ${newTokenReq.status}`);
             }
-            
-            setMembers(response || []);
-        } catch (error) {
-            console.error("Error fetching members:", error);
+
+            const newTokenResp = await newTokenReq.json();
+            setNewToken(newTokenResp.token);
+        } catch (err) {
+            setError(err instanceof Error ? err.message : "An unexpected error occurred");
         } finally {
-            setLoading(false);
+            setIsLoading(false);
         }
     };
-
-    // Fetch members on mount
-    useEffect(() => {
-        fetchMembers();
-    }, []); // <-- FIXED: Added empty dependency array to prevent infinite loop
-    
-    const handleCsvUpload = async (e: ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (!file) return;
-
-        setUploading(true);
-        setMessage("");
-
-        // Create FormData to send the file file over HTTP
-        const formData = new FormData();
-        formData.append("file", file);
-
-        try {
-            const response = await fetch(`${API_URL}/members/upload`, {
-                method: "POST",
-                credentials: "include", // Keep this if you use sessions/cookies
-                body: formData, // Sending FormData automatically sets 'Content-Type' to 'multipart/form-data'
-            });
-
-            const data = await response.json();
-
-            if (!response.ok) {
-                throw new Error(data.message || "Failed to upload CSV");
-            }
-
-            setMessage("CSV uploaded and members processed successfully!");
-            // Optional: Trigger a state refresh here to reload your members list
-        } catch (error: any) {
-            setMessage(`Upload failed: ${error.message}`);
-        } finally {
-            setUploading(false);
-            // Clear the input so the same file can be uploaded again if needed
-            e.target.value = "";
-
-            fetchMembers();
-        }
-    };
-
-    // Update status handler
-    const updateStatus = async (memberId: string) => {
-        try {
-            const updateReq = await fetch(`${API_URL}/member`, {
-                method: "PATCH",
-                credentials: "include",
-                headers: {
-                    "Content-Type": "application/json", // <-- FIXED: Added content-type header
-                },
-                body: JSON.stringify({
-                    member_id: memberId
-                })
-            });
-
-            if (updateReq.ok) {
-                // Optimistically or reactively update local state so UI updates instantly
-                setMembers(prevMembers => 
-                    prevMembers.map(m => 
-                        m.id === memberId ? { ...m, voteStatus: !m.voteStatus } : m
-                    )
-                );
-            } else {
-                console.error("Failed to update status");
-            }
-        } catch (error) {
-            console.error("Error updating status:", error);
-        }
-    };
-
-    if (loading) return <div className="p-4">Loading voters...</div>;
 
     return (
-        <div className="flex flex-col p-4 gap-4">
-            <div className="flex flex-row space-x-10">
-                <h1 className="text-2xl font-bold">Voter Management</h1>
-                <button className="bg-gray-500 p-3 w-50 text-white" onClick={() => router.push("/admin")}>BACK</button>
+        <div className="flex flex-col gap-6 p-6 max-w-xl mx-auto">
+            {/* Back Button */}
+            <div>
+                <button 
+                    onClick={() => router.push("/admin")}
+                    className="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 transition shadow-sm cursor-pointer"
+                >
+                    ← Back to Admin
+                </button>
             </div>
 
-            <div className="flex flex-col">
-                <label className="block text-sm font-medium text-gray-700">
-                Upload Members via CSV
-            </label>
-            <div className="flex items-center gap-2">
-                <input 
-                    type="file" 
-                    accept=".csv" // Restricts file picker to CSVs
-                    onChange={handleCsvUpload}
-                    disabled={uploading}
-                    className="block w-full text-sm text-gray-500
-                        file:mr-4 file:py-2 file:px-4
-                        file:rounded-md file:border-0
-                        file:text-sm file:font-semibold
-                        file:bg-blue-50 file:text-blue-700
-                        hover:file:bg-blue-100
-                        disabled:opacity-50"
-                />
-            </div>
-            {uploading && <p className="text-sm text-blue-500">Processing file...</p>}
-            {message && <p className="text-sm font-medium text-gray-800">{message}</p>}
+            {/* Action Card */}
+            <div className="border border-gray-200 dark:border-gray-800 rounded-xl p-6 bg-gray-50 dark:bg-gray-900/50 flex flex-col gap-4">
+                <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Round Management</h2>
+                <p className="text-sm text-gray-500 dark:text-gray-400">Generate a secure cryptographic token to initialize a new voting round.</p>
+                
+                <button 
+                    className="w-full sm:w-auto self-start bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2.5 px-5 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed shadow-sm text-sm" 
+                    onClick={handleRound}
+                    disabled={isLoading}
+                >
+                    {isLoading ? "Generating Round..." : "Create New Round"}
+                </button>
             </div>
 
-            <div className="overflow-x-auto">
-                <table className="min-w-full bg-white border-collapse border border-gray-200">
-                    <thead>
-                       <tr className="bg-gray-100 text-left">
-                            <th className="p-2 border">No.</th>
-                            <th className="p-2 border">Name</th>
-                            <th className="p-2 border">Voting Ability</th>
-                            <th className="p-2 border">Action</th>
-                        </tr> 
-                    </thead>
+            {/* Error Feedback */}
+            {error && (
+                <div className="p-4 rounded-lg bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900 text-sm text-red-600 dark:text-red-400">
+                    <strong>Error:</strong> {error}
+                </div>
+            )}
 
-                    <tbody>
-                        {}
-                        {members.map((member, idx) => (
-                            <tr key={member.id || idx} className="hover:bg-gray-50">
-                                <td className="p-2 border">{idx + 1}</td>
-                                <td className="p-2 border">{member.name}</td>
-                                <td className="p-2 border">
-                                    <span className={`px-2 py-1 rounded text-sm ${!member.voteStatus ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
-                                        {!member.voteStatus ? "Able to vote" : "Not able to vote"}
-                                    </span>
-                                </td>
-                                <td className="p-2 border">
-                                    <button 
-                                        onClick={() => updateStatus(member.id)}
-                                        className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm transition"
-                                    >
-                                        Toggle Status {/* FIXED: Button now has text */}
-                                    </button>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </div>
+            {/* Success Token Display */}
+            {newToken && (
+                <div className="flex flex-col gap-2 p-4 border border-emerald-200 dark:border-emerald-900 bg-emerald-50 dark:bg-emerald-950/30 rounded-lg">
+                    <span className="text-sm font-semibold text-emerald-800 dark:text-emerald-300">
+                        ✨ Token Generated Successfully!
+                    </span>
+                    <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 p-3 rounded font-mono text-sm break-all my-1 select-all">
+                        {newToken}
+                    </div>
+                    <p className="text-xs text-emerald-700 dark:text-emerald-400">
+                        Please save this token somewhere secure immediately. You won't be able to see it again.
+                    </p>
+                </div>
+            )}
         </div>
     );
 }

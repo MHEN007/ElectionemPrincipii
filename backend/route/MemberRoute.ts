@@ -59,4 +59,20 @@ memberRoute.post("/members/upload", upload.single('file'), async (req, res) => {
     }
 })
 
+memberRoute.delete("/member/:id", async (req, res) => {
+    const { id } = req.params
+
+    if (id == req.user?.user.id) {
+        res.status(403).json({message: "unable to delete self"})
+    }
+
+    try {
+        await MemberController.DeleteMember(id)
+        res.sendStatus(200)
+    } catch (error) {
+        if (error instanceof Error)
+            res.status(500).json({message: error.message})
+    }
+})
+
 export default memberRoute

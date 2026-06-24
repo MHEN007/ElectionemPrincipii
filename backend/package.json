@@ -35,6 +35,6 @@
     "start": "bun index.ts",
     "generate": "drizzle-kit generate",
     "migrate": "drizzle-kit migrate",
-    "vercel-build": "drizzle-kit migrate && bun run start"
+    "vercel-build": "drizzle-kit migrate && tsc"
   }
 }

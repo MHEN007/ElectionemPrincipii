@@ -14,8 +14,6 @@ authRouter.post("/login", async (req, res) => {
             httpOnly: true,
             maxAge: 1000 * 60 * 15,
             secure: true,
-            sameSite: 'none',
-            // partitioned: true,
         })
 
         res.status(200).json({message: "SUCCESS"})

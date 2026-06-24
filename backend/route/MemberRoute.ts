@@ -14,15 +14,13 @@ const upload = multer({ storage, fileFilter: (_, file, cb) => {
     }
 }})
 
-memberRoute.use(Middleware)
-
-memberRoute.get("/members", async (req, res) => {
+memberRoute.get("/members", Middleware, async (req, res) => {
     const members = await MemberController.GetMembers();
 
     res.status(200).json(members)
 })
 
-memberRoute.patch("/member", async (req, res) => {
+memberRoute.patch("/member", Middleware, async (req, res) => {
     try {
         const { member_id } = req.body
     

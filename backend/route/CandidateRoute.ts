@@ -4,11 +4,9 @@ import { CandidateController } from "../controller/CandidateController.js";
 
 const candidateRoute = express.Router();
 
-candidateRoute.use(Middleware)
+candidateRoute.get("/candidates/:group", Middleware,async (req, res) => {
 
-candidateRoute.get("/candidates/:group", async (req, res) => {
-
-    const group = req.params["group"]
+    const group: any = req.params["group"]
 
     try {
         const candidates = await CandidateController.GetCandidates(group)

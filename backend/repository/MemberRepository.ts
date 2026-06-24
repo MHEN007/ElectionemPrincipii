@@ -68,7 +68,7 @@ export class MemberRepository {
         })
         .from(Member)
         .leftJoin(VoteStatusSRVM, eq(Member.id, VoteStatusSRVM.id))
-        .where(and(ne(Member.group, "SRVM"), eq(Member.voteDisabled, false)))
+        .where(and(ne(Member.group, "PVRA"), eq(Member.voteDisabled, false)))
         .orderBy(desc(VoteStatusSRVM.vote_status))
 
         return {

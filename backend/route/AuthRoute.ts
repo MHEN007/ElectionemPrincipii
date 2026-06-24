@@ -12,7 +12,9 @@ authRouter.post("/login", async (req, res) => {
 
         res.cookie("e2rdo", token, {
             httpOnly: true,
-            maxAge: 1000 * 60 * 15
+            maxAge: 1000 * 60 * 15,
+            secure: true,
+            sameSite: 'none'
         })
 
         res.status(200).json({message: "SUCCESS"})

@@ -44,56 +44,75 @@ export default function Login(){
     }
 
     return (
-        <div className="flex flex-col items-center m-5">
+        <div className="flex flex-col items-center px-4 py-8">
             {/* Title */}
-            <div className="flex flex-col items-center">
-                <Image src="/perseviam.png" width={100} height={200} alt="Logo Perseviam"/>
-                <h1 className="font-bold text-3xl">Electionem Principiis Nostris A.D. {year}</h1>
+            <div className="flex flex-col items-center text-center">
+                <Image
+                src="/perseviam.png"
+                width={100}
+                height={200}
+                alt="Logo Perseviam"
+                />
+
+                <h1 className="mt-4 text-2xl md:text-3xl font-bold">
+                Electionem Principiis Nostris A.D. {year}
+                </h1>
             </div>
 
             {/* Error */}
-            {error !== "" && (
-            <div className="flex flex-col bg-red-300">
+            {error && (
+                <div className="mt-6 w-full max-w-md rounded bg-red-200 p-3 text-red-800">
                 {error}
-            </div>
+                </div>
             )}
 
             {/* Login Form */}
-            <div className="flex flex-col mt-20">
-                <div className="flex flex-row justify-between m-5">
-                    <label className="p-2 font-bold">Nomen</label>
-                    <input 
-                    className="bg-white mx-10 text-lg border rounded-sm p-2" 
-                    type="text" 
-                    id="username" 
+            <form
+                className="mt-10 w-full max-w-md space-y-6"
+                onSubmit={(e) => {
+                e.preventDefault(); // Prevent page refresh
+                handleLogin();
+                }}
+            >
+                <div>
+                <label htmlFor="username" className="mb-2 block font-bold">
+                    Nomen
+                </label>
+
+                <input
+                    id="username"
+                    type="text"
+                    autoComplete="username"
                     placeholder="Entrare Nomen"
-                    onChange={(e) => {
-                        setUsername(e.target.value);
-                    }}
-                    />
+                    className="w-full rounded border bg-white p-3 text-lg"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                />
                 </div>
 
-                <div className="flex flex-row justify-between m-5">
-                    <label className="p-2 font-bold">Password</label>
-                    <input 
-                    className="bg-white mx-10 text-lg border rounded-sm p-2" 
-                    type="password" id="password" 
+                <div>
+                <label htmlFor="password" className="mb-2 block font-bold">
+                    Password
+                </label>
+
+                <input
+                    id="password"
+                    type="password"
+                    autoComplete="current-password"
                     placeholder="Entrare Password"
-                    onChange={(e) => {
-                        setPassword(e.target.value)
-                    }}
-                    />
+                    className="w-full rounded border bg-white p-3 text-lg"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                />
                 </div>
 
-                <div className="flex items-center flex-row justify-center">
-                    <button 
-                    className="bg-[#D4AF37] text-yellow-900 w-100 p-2 text-lg"
-                    onClick={handleLogin}
-                    >
-                        Entrare
-                    </button>
-                </div>
-            </div>
+                <button
+                type="submit"
+                className="w-full rounded bg-[#D4AF37] p-3 text-lg font-semibold text-yellow-900 transition hover:brightness-95"
+                >
+                Entrare
+                </button>
+            </form>
         </div>
     )
 }

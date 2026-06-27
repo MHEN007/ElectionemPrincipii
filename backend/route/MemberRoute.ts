@@ -76,7 +76,7 @@ memberRoute.delete("/member/:id", Middleware, async (req, res) => {
     }
 
     try {
-        await MemberController.DeleteMember(reqId)
+        await MemberController.DeleteMember(reqId, req.user?.user.id)
         res.sendStatus(200)
     } catch (error) {
         if (error instanceof Error)

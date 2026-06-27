@@ -28,7 +28,7 @@ export default function Page(){
     const handleVote = async () => {
         try {
             if (!checked || nominee === "") {
-                alert("Please check the box to vote and select a nominee");
+                setError("Please check the box to vote and select a nominee");
                 return;
             }
 
@@ -139,7 +139,7 @@ export default function Page(){
                             onChange={() => setChecked(!checked)}
                             checked={checked}
                         />
-                        <span>Testor Dominum Deum Omnipotentem, me eum eligere, quem iudico eligi debere</span>
+                        <span>Testor Dominum Deum Omnipotentem, me eum eligere, quem iudico eligi debere (Aku menjadikan Tuhan yang Mahakuasa sebagai saksiku, bahwa pilihanku diberikan untuk dia yang menurutku layak dipilih)</span>
                     </label>
                 </div>
 

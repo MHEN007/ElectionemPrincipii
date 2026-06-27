@@ -18,33 +18,41 @@ export default function Status() {
     const [error, setError] = useState<string | null>(null)
 
     const router = useRouter();
+    
+    const fetchVotingStatus = async () => {
+        try {
+            setIsLoading(true)
+            const req = await fetch(`${API_URL}/vote/status`, {
+                method: "GET",
+                credentials: "include"
+            })
+
+            if (!req.ok) {
+                const errorData = await req.json()
+                throw new Error(errorData.message || "Failed to fetch data")
+            }
+
+            const respBody = await req.json()
+
+            setVicariusVotingStatus(respBody?.vicariusVoteStatus || [])
+            setVicariaVotingStatus(respBody?.vicariaVoteStatus || [])
+        } catch (err: any) {
+            setError(err.message)
+        } finally {
+            setIsLoading(false)
+        }
+    }
 
     useEffect(() => {
-        const fetchVotingStatus = async () => {
-            try {
-                setIsLoading(true)
-                const req = await fetch(`${API_URL}/vote/status`, {
-                    method: "GET",
-                    credentials: "include"
-                })
-
-                if (!req.ok) {
-                    const errorData = await req.json()
-                    throw new Error(errorData.message || "Failed to fetch data")
-                }
-
-                const respBody = await req.json()
-
-                setVicariusVotingStatus(respBody?.vicariusVoteStatus || [])
-                setVicariaVotingStatus(respBody?.vicariaVoteStatus || [])
-            } catch (err: any) {
-                setError(err.message)
-            } finally {
-                setIsLoading(false)
-            }
-        }
-
+        
         fetchVotingStatus()
+
+        // Auto refresh every 60 seconds
+        const intervalId = setInterval(() => {
+            fetchVotingStatus();
+        }, 60000);
+
+        return () => clearInterval(intervalId);
     }, [])
 
     return (
@@ -87,7 +95,7 @@ export default function Status() {
                         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
                             <div className="px-6 py-5 border-b border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800/50">
                                 <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Vicarius Voting Status</h2>
-                                <p>Quorum: {Math.floor(vicariaVotingStatus.length * 2/3)}</p>
+                                <p>Quorum: {Math.floor(vicariusVotingStatus.length * 2/3)}</p>
                             </div>
                             <div className="overflow-x-auto">
                                 <StatusTable data={vicariusVotingStatus} />

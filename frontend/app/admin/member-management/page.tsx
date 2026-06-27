@@ -20,6 +20,8 @@ export default function Round() {
 
     const router = useRouter()
 
+    const [error, setError] = useState("");
+
     const fetchMembers = async () => {
         try {
             const membersReq = await fetch(`${API_URL}/members`, {
@@ -119,6 +121,10 @@ export default function Round() {
 
         if (resp.ok) {
             setMembers(members.filter((member) => member.id !== id))
+        } else {
+            const err = await resp.json()
+            
+            setError(err.message)
         }
     }
 
@@ -135,6 +141,7 @@ export default function Round() {
                 <label className="block text-sm font-medium text-gray-700">
                 Upload Members via CSV
             </label>
+
             <div className="flex items-center gap-2">
                 <input 
                     type="file" 
@@ -142,17 +149,23 @@ export default function Round() {
                     onChange={handleCsvUpload}
                     disabled={uploading}
                     className="block w-full text-sm text-gray-500
-                        file:mr-4 file:py-2 file:px-4
-                        file:rounded-md file:border-0
-                        file:text-sm file:font-semibold
-                        file:bg-blue-50 file:text-blue-700
-                        hover:file:bg-blue-100
-                        disabled:opacity-50"
-                />
+                    file:mr-4 file:py-2 file:px-4
+                    file:rounded-md file:border-0
+                    file:text-sm file:font-semibold
+                    file:bg-blue-50 file:text-blue-700
+                    hover:file:bg-blue-100
+                    disabled:opacity-50"
+                    />
             </div>
             {uploading && <p className="text-sm text-blue-500">Processing file...</p>}
             {message && <p className="text-sm font-medium text-gray-800">{message}</p>}
             </div>
+            
+            { error !== "" && (
+                <div className="flex flex-col bg-red-200 text-red-600">
+                    {error}
+                </div>
+            )}
 
             <div className="overflow-x-auto">
                 <table className="min-w-full bg-white border-collapse border border-gray-200">

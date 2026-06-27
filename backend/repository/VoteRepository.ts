@@ -1,4 +1,4 @@
-import { count, eq } from "drizzle-orm";
+import { count, eq, desc } from "drizzle-orm";
 import { db } from "../lib/db.js"
 import { VicariaCandidate, VicariusCandidate } from "../schema/Candidate.js";
 import { Vote } from "../schema/Vote.js";
@@ -11,25 +11,23 @@ type InsertVote = typeof Vote.$inferInsert
 
 export class VoteRepository {
     public static async GetVotes() {
-        const pvraVotes = await db
-            .select({
-                name: Member.name,
-                votes: count(Vote.vote)
-            })
+        const [pvraVotes, srvmVotes] = await Promise.all([
+        db
+            .select({ name: Member.name, votes: count(Vote.vote) })
             .from(VicariusCandidate)
             .innerJoin(Member, eq(Member.id, VicariusCandidate.id))
             .leftJoin(Vote, eq(VicariusCandidate.id, Vote.vote))
-            .groupBy(VicariusCandidate.id, Member.name);
+            .orderBy(desc(count(Vote.vote)))
+            .groupBy(VicariusCandidate.id, Member.name),
 
-        const srvmVotes = await db
-            .select({
-                name: Member.name,
-                votes: count(Vote.vote)
-            })
+        db
+            .select({ name: Member.name, votes: count(Vote.vote) })
             .from(VicariaCandidate)
             .innerJoin(Member, eq(Member.id, VicariaCandidate.id))
             .leftJoin(Vote, eq(VicariaCandidate.id, Vote.vote))
-            .groupBy(VicariaCandidate.id, Member.name);
+            .orderBy(desc(count(Vote.vote)))
+            .groupBy(VicariaCandidate.id, Member.name),
+        ]);
 
         return {
             pvraVotes: pvraVotes,
@@ -50,7 +48,7 @@ export class VoteRepository {
             }
 
             // Check if voter can vote or not
-            const voteAbility = await db.select({ status: Member.voteDisabled }).from(Member).where(eq(Member.id, voter_id)).then((r) => r.at(0))
+            const voteAbility = await tx.select({ status: Member.voteDisabled }).from(Member).where(eq(Member.id, voter_id)).then((r) => r.at(0))
 
             if (!voteAbility || voteAbility.status) {
                 throw new Error("Your vote status has been disabled. Please contact the MC!")

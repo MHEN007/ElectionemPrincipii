@@ -46,8 +46,25 @@ export class MemberRepository {
         return member;
     }
 
-    public static async DeleteMember(id: string) {
-        await db.delete(Member).where(eq(Member.id, id))
+    public static async DeleteMember(id: string, executor_id: string) {
+
+        await db.transaction(async (tx) => {
+            const [executor] = await tx.select({isAdmin: Member.admin}).from(Member).where(eq(Member.id, executor_id))
+            
+            // Also identify if the user that is triggering the event is admin or not
+            if(!executor || !executor.isAdmin) {
+                throw new Error("Not authorized to do deletion")
+            }
+            
+            // Identify is member is admin or not. Since we cannot delete admin
+            const [member] = await tx.select({isAdmin: Member.admin}).from(Member).where(eq(Member.id, id))
+
+            if (!member || member.isAdmin){
+                throw new Error("Cannot delete admin")
+            }
+            
+            await tx.delete(Member).where(eq(Member.id, id))
+        })
     }
 
     public static async GetMemberVoterStatus() {

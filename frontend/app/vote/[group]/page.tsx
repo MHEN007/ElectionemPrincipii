@@ -24,6 +24,7 @@ export default function Page(){
     const [candidates, setCandidates] = useState<Candidates[]>([]);
     const [error, setError] = useState<string>("");
     const [token, setToken] = useState<string>("");
+    const [loading, setLoading] = useState<boolean>(true);
 
     const handleVote = async () => {
         try {
@@ -74,12 +75,20 @@ export default function Page(){
             if (error instanceof Error){
                 setError(error.message)
             }
+        } finally {
+            setLoading(false)
         }
     }
 
     useEffect(() => {
         getCandidates()
     }, [group])
+
+    if (loading) return (
+        <div className="flex h-screen items-center justify-center text-gray-500 font-medium">
+            Carregando (Loading)...
+        </div>
+    )
 
     return (
         <div className="min-h-screen flex flex-col items-center justify-center p-6 sm:p-10">

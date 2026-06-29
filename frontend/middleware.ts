@@ -2,9 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { API_URL } from "./app/const";
 
-const protectedRoutes = ["/vote"]
-const veryProtectedRoutes = ["/admin"]
-
 export default async function proxy(req: NextRequest) {
     // Get cookies
     const cookieStore = await cookies();
@@ -24,11 +21,11 @@ export default async function proxy(req: NextRequest) {
 
     const adminPower = response.isAdmin
 
-    if (!token && (protectedRoutes.includes(req.nextUrl.pathname) || veryProtectedRoutes.includes(req.nextUrl.pathname))){
+    if (!token && (req.nextUrl.pathname.startsWith("/vote") || req.nextUrl.pathname.startsWith("/admin"))){
         return NextResponse.redirect(new URL("/login", req.nextUrl))
     }
 
-    if (!adminPower && veryProtectedRoutes.includes(req.nextUrl.pathname)) {
+    if (!adminPower && req.nextUrl.pathname.startsWith("/admin")) {
         return NextResponse.redirect(new URL("/vote", req.nextUrl))
     }
 
